@@ -1,0 +1,39 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "defaults",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/${presetName}",
+            "installDir": "${sourceDir}/Install",
+            "hidden": true,
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            },
+            "warnings": {
+                "dev": false
+            }
+        },
+        {
+            "name": "Build-Host",
+            "inherits": [
+                "defaults"
+            ],
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "Build-Firmware",
+            "inherits": [
+                "defaults"
+            ],
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "emil_DIR": "${sourceDir}/Build-Host/_deps/emil-build/cmake",
+                "EMIL_PACKAGE_CONFIG_IMPORT_NAMESPACE": "emil::"
+            }
+        }
+    ]
+}

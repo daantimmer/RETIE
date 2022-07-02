@@ -1,0 +1,23 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "C++",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"webfreak.debug",
+				"marus25.cortex-debug",
+				"twxs.cmake",
+				"ms-vscode.cpptools-extension-pack",
+				"akiramiyakoda.cppincludeguard",
+				"IBM.output-colorizer",
+				"matepek.vscode-catch2-test-adapter"
+			]
+		}
+	}
+	// "initializeCommand": "B:\ST\STM32CubeIDE_1.9.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.stlink-gdb-server.win32_2.0.200.202202231230\tools\bin\ST-LINK_gdbserver.exe -p 50000 -cp B:\ST\STM32CubeIDE_1.9.0\STM32CubeIDE\plugins\com.st.stm32cube.ide.mcu.externaltools.cubeprogrammer.win32_2.0.200.202202231230\tools\bin --swd -e"
+}
