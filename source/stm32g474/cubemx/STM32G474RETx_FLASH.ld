@@ -58,6 +58,9 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
+__privelegedStack_size = 0x200; /* required amount of stack */
+__processStack_size = 0x300;
+
 /* Specify the memory areas */
 MEMORY
 {
@@ -161,6 +164,29 @@ SECTIONS
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >RAM
+
+
+  .privelegedStack :
+  {
+    . = ALIGN(8);
+    __privelegedStack_start = .;
+
+    . += __privelegedStack_size;
+
+    . = ALIGN(8);
+    __privelegedStack_end = .;
+  } > RAM
+
+  .processStack :
+  {
+    . = ALIGN(8);
+    __processStack_start = .;
+
+    . += __processStack_size;
+
+    . = ALIGN(8);
+    __processStack_end = .;
+  } > RAM
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
