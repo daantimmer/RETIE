@@ -1,13 +1,16 @@
 #include "hal/cortex/Startup.hpp"
-
+#include "device.hpp"
 #include <algorithm>
 #include <cstdint>
 
 extern "C"
 {
-    extern void __libc_init_array(void);
-    extern void SystemInit(void);
-    extern int main(void);
+    extern void __libc_init_array();
+    extern void __libc_fini_array();
+
+    extern void SystemInit();
+    extern void SystemCoreClockUpdate();
+    extern int main();
 
     /*----------Symbols defined in linker script----------------------------------*/
     extern unsigned int _sidata;
@@ -21,8 +24,19 @@ extern "C"
     // extern unsigned int _sccmram;
     // extern unsigned int _eccmram;
 
-    [[noreturn]] void Startup(void)
+    extern std::uint32_t __processStack_start[];
+    extern std::uint32_t __processStack_end[];
+
+    extern const char *__privelegedStack_end[];
+
+    [[noreturn]] void /*__attribute__((naked))*/ Startup()
     {
+        asm volatile("ldr r0, =__processStack_end");
+        asm volatile("msr psp, r0");
+        asm volatile("movs r0, %[consrolSpselMask]" ::[consrolSpselMask] "i"(CONTROL_SPSEL_Msk));
+        asm volatile("msr control, r0");
+        asm volatile("isb");
+
         std::copy(&_sidata, &_sidata + (&_edata - &_sdata), &_sdata);
 
         // std::copy(&_siccmram, &_siccmram + (&_eccmram - &_sccmram), &_sccmram);
@@ -33,10 +47,14 @@ extern "C"
 
         SystemInit();
 
+        SystemCoreClockUpdate();
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-        (void)main();
+        main();
 #pragma GCC diagnostic pop
+
+        __libc_fini_array();
 
         while (true)
         {
