@@ -1,51 +1,69 @@
 cmake_minimum_required(VERSION 3.22.0)
 
-project(powermock VERSION 0.1.0)
+project(powermock LANGUAGES C CXX VERSION 0.1.0)
 
 
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Wno-unused-parameter
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(TARGET_BUILD_WIN On)
+    set(TARGET_ARCH_X86 On)
+endif()
 
-    -mcpu=cortex-m4
-    -mthumb
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    set(TARGET_BUILD_UNIX On)
+    set(TARGET_ARCH_X86 On)
+endif()
 
-    -g3
-    -ggdb
-    -ffunction-sections
-    -fdata-sections
-    
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
-)
+if (CMAKE_SYSTEM_NAME STREQUAL "Generic")
+    set(TARGET_ARCH_ARM On)
 
-add_link_options(
-    -mcpu=cortex-m4
-    -mthumb
-    -mfpu=fpv4-sp-d16
-    -mfloat-abi=hard
-    
-    -specs=nano.specs
-    -specs=nosys.specs 
+    enable_language(ASM)
+    set(CMAKE_EXECUTABLE_SUFFIX .elf PARENT_SCOPE)
+endif()
 
-    -g3
-    -ggdb
-    -ffunction-sections
-    -fdata-sections
+if (TARGET_ARCH_ARM)
+    add_compile_options(
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wno-unused-parameter
 
-    -Wl,--print-memory-usage
-    -Wl,--gc-sections 
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
 
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
-    $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
-)
+        -g3
+        -ggdb
+        -ffunction-sections
+        -fdata-sections
+        
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
+    )
 
+    add_link_options(
+        -mcpu=cortex-m4
+        -mthumb
+        -mfpu=fpv4-sp-d16
+        -mfloat-abi=hard
+        
+        -specs=nano.specs
+        -specs=nosys.specs 
+
+        -g3
+        -ggdb
+        -ffunction-sections
+        -fdata-sections
+
+        -Wl,--print-memory-usage
+        -Wl,--gc-sections 
+
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+        $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
+    )
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -57,4 +75,6 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(emil)
 
-add_subdirectory(source)
+if (TARGET_ARCH_ARM)
+    add_subdirectory(source)
+endif()
