@@ -8,3 +8,5 @@ target_sources(hal.cortex.kernel.armv7 PRIVATE
     StackFrame.cpp
     StackFrame.hpp
 )
+
+target_compile_features(hal.cortex.kernel.armv7 PUBLIC cxx_std_17)
