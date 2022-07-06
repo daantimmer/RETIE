@@ -4,6 +4,11 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 set(hints_paths)
 
+if(CMAKE_HOST_WIN32)
+    set(X86_PROGRAM_FILES "ProgramFiles(x86)")
+    list(APPEND hints_paths "$ENV{${X86_PROGRAM_FILES}}/GNU Arm Embedded Toolchain/10 2021.07/bin")
+endif()
+
 find_program(CMAKE_C_COMPILER
     NAMES arm-none-eabi-gcc
     HINTS ${hints_paths})
