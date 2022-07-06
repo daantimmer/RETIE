@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Cortex Debug",
+            "name": "Cortex Debug External",
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "request": "launch",
@@ -21,6 +21,15 @@
             "overrideRestartCommands": [
                 "monitor reset"
             ]
+        },
+        {
+            "name": "Cortex Debug Local",
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "request": "launch",
+            "type": "cortex-debug",
+            "runToEntryPoint": "main",
+            "servertype": "stlink"
         }
     ]
 }
