@@ -1,8 +1,6 @@
 add_library(hal.stm OBJECT)
 
 target_sources(hal.stm PRIVATE
-    EventDispatcher.cpp
-    EventDispatcher.hpp
     InterruptVectors.cpp
     SystemTick.cpp
     SystemTick.hpp
