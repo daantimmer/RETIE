@@ -16,7 +16,15 @@ target_link_options(stm32g474 PRIVATE
 target_link_libraries(stm32g474 PRIVATE
     hal.cortex
     hal.cortex.kernel
-    hal.cortex.kernel.armv7
     hal.stm
+    kernel
     stm32g474.cubemx
+)
+
+add_custom_command(
+    TARGET stm32g474
+    POST_BUILD 
+    COMMAND ${ARM_OBJ_DUMP_TOOL} -h -S "$<TARGET_FILE:stm32g474>" > "$<TARGET_FILE:stm32g474>.lst"
+    COMMAND ${ARM_OBJ_COPY_TOOL} -O binary "$<TARGET_FILE:stm32g474>" "$<TARGET_FILE:stm32g474>.bin"
+    COMMAND ${ARM_OBJ_COPY_TOOL} -O ihex "$<TARGET_FILE:stm32g474>" "$<TARGET_FILE:stm32g474>.hex"
 )
