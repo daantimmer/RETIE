@@ -1,10 +1,17 @@
-#ifndef ARMV7_STACKFRAME_HPP
-#define ARMV7_STACKFRAME_HPP
+#ifndef KERNEL_STACKFRAME_HPP
+#define KERNEL_STACKFRAME_HPP
 
 #include "device.hpp"
+#include "kernel/arch/InitializeStackFrame.hpp"
 #include <cstdint>
 
-namespace hal::kernel
+namespace kernel
+{
+    struct IRunnableThread;
+    void ThreadRunner(IRunnableThread& runnableThread);
+}
+
+namespace kernel::arch
 {
     using wr = void*;
 
@@ -48,7 +55,7 @@ namespace hal::kernel
 
         void* r12{reinterpret_cast<void*>(0xCCCCCCCC)};
         void* lr{nullptr};
-        void* pc{nullptr};
+        void* pc{reinterpret_cast<void*>(&kernel::ThreadRunner)};
         void* xpsr{reinterpret_cast<void*>(xpsrDefaultValue)};
     };
 
@@ -57,8 +64,6 @@ namespace hal::kernel
         SoftwareStackFrame softwareStackFrame;
         ExceptionStackFrame exceptionStackFrame;
     };
-
-    void* InitializeStackFrame(void* const buffer, std::size_t size, void* obj);
 }
 
 #endif
