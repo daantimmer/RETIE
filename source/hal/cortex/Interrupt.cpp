@@ -52,17 +52,16 @@ namespace hal
     }
 
     InterruptHandler::InterruptHandler()
-    {
-    }
+    {}
 
-    InterruptHandler::InterruptHandler(InterruptHandler &&other)
+    InterruptHandler::InterruptHandler(InterruptHandler&& other)
         : irq(other.irq)
     {
         InterruptTable::Instance().TakeOverHandler(irq, *this, other);
         other.irq = static_cast<IRQn_Type>(0xffff);
     }
 
-    InterruptHandler &InterruptHandler::operator=(InterruptHandler &&other)
+    InterruptHandler& InterruptHandler::operator=(InterruptHandler&& other)
     {
         irq = other.irq;
 
@@ -100,7 +99,7 @@ namespace hal
         NVIC_ClearPendingIRQ(irq);
     }
 
-    InterruptTable::InterruptTable(infra::MemoryRange<InterruptHandler *> table)
+    InterruptTable::InterruptTable(infra::MemoryRange<InterruptHandler*> table)
         : table(table)
     {
         std::fill(table.begin(), table.end(), nullptr);
@@ -115,21 +114,21 @@ namespace hal
         table[irq + 16]->Invoke();
     }
 
-    InterruptHandler *InterruptTable::Handler(IRQn_Type irq)
+    InterruptHandler* InterruptTable::Handler(IRQn_Type irq)
     {
         return table[irq + 16];
     }
 
-    void InterruptTable::RegisterHandler(IRQn_Type irq, InterruptHandler &handler)
+    void InterruptTable::RegisterHandler(IRQn_Type irq, InterruptHandler& handler)
     {
-        assert(irq + 16 < table.size());
+        assert(irq + 16u < table.size());
         assert(table[irq + 16] == nullptr);
         table[irq + 16] = &handler;
         __DSB();
         EnableInterrupt(irq);
     }
 
-    void InterruptTable::DeregisterHandler(IRQn_Type irq, InterruptHandler &handler)
+    void InterruptTable::DeregisterHandler(IRQn_Type irq, InterruptHandler& handler)
     {
         assert(table[irq + 16] == &handler);
         DisableInterrupt(irq);
@@ -137,27 +136,28 @@ namespace hal
         table[irq + 16] = nullptr;
     }
 
-    void InterruptTable::TakeOverHandler(IRQn_Type irq, InterruptHandler &handler, const InterruptHandler &previous)
+    void InterruptTable::TakeOverHandler(IRQn_Type irq, InterruptHandler& handler, const InterruptHandler& previous)
     {
         assert(table[irq + 16] == &previous);
         table[irq + 16] = &handler;
         __DSB();
     }
 
-    DispatchedInterruptHandler::DispatchedInterruptHandler(IRQn_Type irq, const infra::Function<void()> &onInvoke)
-        : InterruptHandler(), onInvoke(onInvoke)
+    DispatchedInterruptHandler::DispatchedInterruptHandler(IRQn_Type irq, const infra::Function<void()>& onInvoke)
+        : InterruptHandler()
+        , onInvoke(onInvoke)
     {
         Register(irq);
     }
 
-    DispatchedInterruptHandler::DispatchedInterruptHandler(DispatchedInterruptHandler &&other,
-                                                           const infra::Function<void()> &onInvoke)
-        : InterruptHandler(std::move(other)), onInvoke(onInvoke)
-    {
-    }
+    DispatchedInterruptHandler::DispatchedInterruptHandler(DispatchedInterruptHandler&& other,
+                                                           const infra::Function<void()>& onInvoke)
+        : InterruptHandler(std::move(other))
+        , onInvoke(onInvoke)
+    {}
 
-    DispatchedInterruptHandler &DispatchedInterruptHandler::Assign(DispatchedInterruptHandler &&other,
-                                                                   const infra::Function<void()> &onInvoke)
+    DispatchedInterruptHandler& DispatchedInterruptHandler::Assign(DispatchedInterruptHandler&& other,
+                                                                   const infra::Function<void()>& onInvoke)
     {
         InterruptHandler::operator=(std::move(other));
         this->onInvoke = onInvoke;
@@ -171,17 +171,16 @@ namespace hal
         pending = true;
 
         IRQn_Type irq = Irq();
-        DispatchedInterruptHandler &handler = *this;
-        infra::EventDispatcher::Instance().Schedule([irq, &handler]()
-                                                    { InvokeScheduled(irq, handler); });
+        DispatchedInterruptHandler& handler = *this;
+        infra::EventDispatcher::Instance().Schedule([irq, &handler]() { InvokeScheduled(irq, handler); });
     }
 
-    void DispatchedInterruptHandler::SetInvoke(const infra::Function<void()> &onInvoke)
+    void DispatchedInterruptHandler::SetInvoke(const infra::Function<void()>& onInvoke)
     {
         this->onInvoke = onInvoke;
     }
 
-    void DispatchedInterruptHandler::InvokeScheduled(IRQn_Type irq, DispatchedInterruptHandler &handler)
+    void DispatchedInterruptHandler::InvokeScheduled(IRQn_Type irq, DispatchedInterruptHandler& handler)
     {
         if (InterruptTable::Instance().Handler(irq) == &handler)
         {
@@ -197,20 +196,21 @@ namespace hal
         }
     }
 
-    ImmediateInterruptHandler::ImmediateInterruptHandler(IRQn_Type irq, const infra::Function<void()> &onInvoke)
-        : InterruptHandler(), onInvoke(onInvoke)
+    ImmediateInterruptHandler::ImmediateInterruptHandler(IRQn_Type irq, const infra::Function<void()>& onInvoke)
+        : InterruptHandler()
+        , onInvoke(onInvoke)
     {
         Register(irq);
     }
 
-    ImmediateInterruptHandler::ImmediateInterruptHandler(ImmediateInterruptHandler &&other,
-                                                         const infra::Function<void()> &onInvoke)
-        : InterruptHandler(std::move(other)), onInvoke(onInvoke)
-    {
-    }
+    ImmediateInterruptHandler::ImmediateInterruptHandler(ImmediateInterruptHandler&& other,
+                                                         const infra::Function<void()>& onInvoke)
+        : InterruptHandler(std::move(other))
+        , onInvoke(onInvoke)
+    {}
 
-    ImmediateInterruptHandler &ImmediateInterruptHandler::Assign(ImmediateInterruptHandler &&other,
-                                                                 const infra::Function<void()> &onInvoke)
+    ImmediateInterruptHandler& ImmediateInterruptHandler::Assign(ImmediateInterruptHandler&& other,
+                                                                 const infra::Function<void()>& onInvoke)
     {
         InterruptHandler::operator=(std::move(other));
         this->onInvoke = onInvoke;

@@ -60,7 +60,7 @@ namespace
 
 extern "C"
 {
-    [[noreturn]] void __attribute__((naked)) Startup()
+    [[noreturn]] __attribute__((naked)) void Startup()
     {
         asm volatile(
             R"(
