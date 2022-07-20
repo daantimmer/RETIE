@@ -42,7 +42,7 @@ _Min_Heap_Size = 0x200; /* required amount of heap */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
 __privelegedStack_size = 0x200; /* required amount of stack */
-__processStack_size = 0x300;
+__processStack_size = 0x1000;
 
 /* Memories definition */
 MEMORY

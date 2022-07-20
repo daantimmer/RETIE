@@ -6,6 +6,8 @@ target_link_libraries(hal.cortex.kernel PUBLIC
 )
 
 target_sources(hal.cortex.kernel PRIVATE
+    Configuration.hpp
+    InterruptMasking.cpp
     PendSV_Handler.cpp
     RequestContextSwitch.cpp
     StackAlignment.cpp

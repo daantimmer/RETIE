@@ -18,6 +18,7 @@ target_include_directories(stm32g474.cubemx SYSTEM
 target_compile_definitions(stm32g474.cubemx PUBLIC
     STM32G474xx
     USE_HAL_DRIVER
+    USE_FULL_LL_DRIVER
 )
 
 target_sources(stm32g474.cubemx PRIVATE

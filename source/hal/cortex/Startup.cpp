@@ -46,6 +46,10 @@ namespace
             SystemInit();
 
             SystemCoreClockUpdate();
+
+            DBGMCU->APB1FZR1 |= DBGMCU_APB1FZR1_DBG_TIM2_STOP | DBGMCU_APB1FZR1_DBG_TIM3_STOP
+                | DBGMCU_APB1FZR1_DBG_TIM4_STOP | DBGMCU_APB1FZR1_DBG_TIM5_STOP | DBGMCU_APB1FZR1_DBG_TIM6_STOP
+                | DBGMCU_APB1FZR1_DBG_TIM7_STOP;
         }
 
         [[noreturn]] void TearDown()
@@ -62,32 +66,24 @@ extern "C"
 {
     [[noreturn]] __attribute__((naked)) void Startup()
     {
-        asm volatile(
-            R"(
-                ldr r0, =__processStack_end
-                msr psp, r0
-                movs r0, %[consrolSpselMask]
-                msr control, r0
-                isb
-            )"
+        asm volatile("ldr r0, =__processStack_end");
+        asm volatile("msr psp, r0");
+        asm volatile("movs r0, %[consrolSpselMask]" ::[consrolSpselMask] "i"(CONTROL_SPSEL_Msk));
+        asm volatile("msr control, r0");
+        asm volatile("isb");
 
-            R"(
-                ldr r0, = SetUp
-                blx r0
-            )"
+        asm volatile("ldr r0, = SetUp");
+        asm volatile("ldr r1, = 1");
+        asm volatile("ldr r2, = 2");
+        asm volatile("ldr r3, = 3");
+        asm volatile("blx r0");
 
-            R"(
-                ldr r0, = main
-                blx r0
-            )"
+        asm volatile("ldr r0, = main");
+        asm volatile("blx r0");
 
-            R"(
-                ldr r0, = TearDown
-                blx r0
-            )"
+        asm volatile("ldr r0, = TearDown");
+        asm volatile("blx r0");
 
-            R"(
-                b .
-            )" ::[consrolSpselMask] "i"(CONTROL_SPSEL_Msk));
+        asm volatile("b .");
     }
 }

@@ -15,8 +15,9 @@ target_link_options(stm32g474 PRIVATE
 
 target_link_libraries(stm32g474 PRIVATE
     hal.cortex
-    hal.cortex.kernel
     hal.stm
+    
+    hal.cortex.kernel
     kernel
     stm32g474.cubemx
 )

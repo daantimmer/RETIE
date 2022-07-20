@@ -1,10 +1,26 @@
 #include "kernel/Scheduler.hpp"
 #include "kernel/MainThread.hpp"
 #include "kernel/ThreadControlBlock.hpp"
+#include "kernel/arch/InterruptMasking.hpp"
 #include "kernel/arch/RequestContextSwitch.hpp"
 
 namespace kernel
 {
+
+    template <std::uint32_t (&Function)()>
+    struct InterruptMaskingUnmaskingLock
+    {
+        ~InterruptMaskingUnmaskingLock()
+        {
+            arch::restoreInterruptMasking(interruptMask);
+        }
+
+        std::uint32_t interruptMask{Function()};
+    };
+
+    struct InterruptMaskingLock: InterruptMaskingUnmaskingLock<arch::enableInterruptMasking>
+    {};
+
     void Scheduler::Add(ThreadControlBlock& tcb)
     {
         tcb.GetStack().Initialize(tcb.GetOwner());
@@ -21,14 +37,19 @@ namespace kernel
 
     void Scheduler::Block()
     {
-        auto& tcb = GetCurrentThreadControlBlock();
-        tcb.GetList().erase(tcb);
+        {
+            const InterruptMaskingLock interruptMaskingLock;
+            auto& tcb = GetCurrentThreadControlBlock();
+            tcb.GetList().erase(tcb);
+        }
 
         arch::RequestContextSwitch();
     }
 
     void Scheduler::Unblock(ThreadControlBlock& tcb)
     {
+        const InterruptMaskingLock interruptMaskingLock;
+
         tcb.GetList().erase(tcb);
         readyList.insert(tcb);
         tcb.SetList(readyList);
