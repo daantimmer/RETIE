@@ -10,7 +10,7 @@ namespace hal
         {
             if (irq >= 0)
             {
-                NVIC_SetPriority(irq, 2);
+                // NVIC_SetPriority(irq, 2);
                 NVIC_EnableIRQ(irq);
             }
             else if (irq == -13 /*HardFault_IRQn*/)
@@ -19,7 +19,7 @@ namespace hal
                 ;
             else if (irq == SysTick_IRQn)
             {
-                NVIC_SetPriority(irq, 2);
+                // NVIC_SetPriority(irq, 2);
                 SysTick->CTRL |= 1 << 1;
             }
             else
