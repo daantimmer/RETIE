@@ -69,8 +69,8 @@ include(FetchContent)
 FetchContent_Declare(
     emil
     GIT_REPOSITORY https://github.com/philips-software/embeddedinfralib.git
-    GIT_TAG        b76d00951b5b46aea8fde3408ba56275e633c933
-    # GIT_TAG modern-cmake
+    # GIT_TAG        b76d00951b5b46aea8fde3408ba56275e633c933
+    GIT_TAG modern-cmake
 )
 
 FetchContent_MakeAvailable(emil)
