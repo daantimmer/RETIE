@@ -1,4 +1,4 @@
-FROM gcc:11
+FROM gcc:10
 
 RUN apt-get --allow-releaseinfo-change update \
     # these are required to download cmake and gcc-arm-none-eabi from artifactory
