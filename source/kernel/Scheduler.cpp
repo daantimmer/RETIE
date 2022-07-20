@@ -54,7 +54,7 @@ namespace kernel
         const InterruptMaskingLock interruptMaskingLock;
 
         tcb.GetList().erase(tcb);
-        readyList.insert(tcb);
+        readyList.push(tcb);
         tcb.SetList(readyList);
 
         arch::RequestContextSwitch();
@@ -63,7 +63,7 @@ namespace kernel
     void Scheduler::Suspend(ThreadControlBlock& tcb)
     {
         tcb.GetList().erase(tcb);
-        suspendedList.insert(tcb);
+        suspendedList.push(tcb);
         tcb.SetList(suspendedList);
 
         arch::RequestContextSwitch();
@@ -74,7 +74,7 @@ namespace kernel
         auto& tcb = GetCurrentThreadControlBlock();
 
         tcb.GetList().erase(tcb);
-        readyList.insert(tcb);
+        readyList.push(tcb);
         tcb.SetList(readyList);
 
         arch::RequestContextSwitch();
@@ -102,7 +102,7 @@ namespace kernel
 
     void Scheduler::AddInternal(ThreadControlBlock& tcb)
     {
-        readyList.insert(tcb);
+        readyList.push(tcb);
         tcb.SetList(readyList);
         tcb.State(ThreadState::Ready);
     }
