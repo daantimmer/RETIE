@@ -1,6 +1,6 @@
 #include "hal/stm/TicklessTimerSource.hpp"
 #include "infra/event/EventDispatcher.hpp"
-#include "infra/timer/TimerServiceManager.hpp"
+#include "infra/timer/TimerService.hpp"
 #include <cassert>
 
 namespace infra
