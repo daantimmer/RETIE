@@ -32,7 +32,7 @@ namespace kernel
     {
         AddInternal(mt.GetThreadControlBlock());
 
-        currentThreadControlBlock = &static_cast<ThreadControlBlock&>(readyList.front());
+        currentThreadControlBlock = &static_cast<ThreadControlBlock&>(readyList.top());
     }
 
     void Scheduler::Block()
@@ -90,7 +90,7 @@ namespace kernel
         auto& currentStack = GetCurrentThreadControlBlock().GetStack();
         currentStack.StackPointer(stackPointer);
 
-        currentThreadControlBlock = static_cast<ThreadControlBlock*>(&readyList.front());
+        currentThreadControlBlock = static_cast<ThreadControlBlock*>(&readyList.top());
 
         if (currentThreadControlBlock == nullptr)
         {
