@@ -28,6 +28,7 @@ namespace kernel
         void AddInternal(ThreadControlBlock& tcb);
 
         ThreadList readyList;
+        ThreadList blockedList;
         ThreadList suspendedList;
 
         ThreadControlBlock* currentThreadControlBlock{nullptr};

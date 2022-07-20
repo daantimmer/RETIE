@@ -39,8 +39,11 @@ namespace kernel
     {
         {
             const InterruptMaskingLock interruptMaskingLock;
+
             auto& tcb = GetCurrentThreadControlBlock();
             tcb.GetList().erase(tcb);
+            blockedList.push(tcb);
+            tcb.SetList(blockedList);
         }
 
         arch::RequestContextSwitch();
