@@ -27,10 +27,12 @@ extern "C" int RealMain()
 
     static infra::TimerRepeating timer;
 
+    DBGMCU->CR |= DBGMCU_CR_DBG_STANDBY | DBGMCU_CR_DBG_SLEEP | DBGMCU_CR_DBG_STOP;
+
     static kernel::IdleThread idleThread{[]() {
         while (true)
         {
-            // asm volatile("wfe");
+            asm volatile("wfe");
         }
     }};
 
