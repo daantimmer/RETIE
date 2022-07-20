@@ -24,6 +24,7 @@ RUN apt-get --allow-releaseinfo-change update \
     # remove all items that are not required while running the container
     && apt-get clean \
     && apt-get -y remove wget lbzip2 \
-    && rm -rf /var/lib/apt/lists/* 
+    && rm -rf /var/lib/apt/lists/*  \
+    && rm -rf /root/.gnupg
 
 ENV PATH "/gcc-arm-none-eabi-10.3-2021.10/bin:/usr/lib/ccache:/usr/bin/cmake/bin:$PATH"
