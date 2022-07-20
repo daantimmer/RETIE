@@ -17,9 +17,9 @@ namespace kernel
         return priorityInheritance == 0 ? GetPriority() : priorityInheritance;
     }
 
-    bool ThreadControlBlockItem::operator>(const ThreadControlBlockItem& other) const
+    bool ThreadControlBlockItem::operator<(const ThreadControlBlockItem& other) const
     {
-        return GetEffectivePriority() > other.GetEffectivePriority();
+        return GetEffectivePriority() < other.GetEffectivePriority();
     }
 
     // bool ThreadControlBlockItem::operator==(const ThreadControlBlockItem& other) const

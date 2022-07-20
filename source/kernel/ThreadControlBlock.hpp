@@ -25,7 +25,7 @@ namespace kernel
         std::uint8_t GetPriority() const;
         std::uint8_t GetEffectivePriority() const;
 
-        bool operator>(const ThreadControlBlockItem& other) const;
+        bool operator<(const ThreadControlBlockItem& other) const;
         // bool operator==(const ThreadControlBlockItem& other) const;
 
         ThreadList& GetList() const;
