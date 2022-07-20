@@ -29,7 +29,8 @@
             "request": "launch",
             "type": "cortex-debug",
             "runToEntryPoint": "main",
-            "servertype": "stlink"
+            "servertype": "stlink",
+            "svdFile": "${workspaceFolder}/STM32G474xx.svd"
         }
     ]
 }
