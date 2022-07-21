@@ -22,9 +22,13 @@ namespace kernel
 
         ThreadControlBlock& GetCurrentThreadControlBlock() const;
 
+        void RequestContextSwitchIfNeeded();
+
         void* SwitchContext(void* stackPointer);
 
     private:
+        bool IsContextSwitchRequired() const;
+
         void AddInternal(ThreadControlBlock& tcb);
 
         ThreadList readyList;

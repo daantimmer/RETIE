@@ -53,9 +53,8 @@ namespace kernel
     {
         const InterruptMaskingLock interruptMaskingLock;
 
-        tcb.GetList().erase(tcb);
-        readyList.push(tcb);
-        tcb.SetList(readyList);
+
+        RequestContextSwitchIfNeeded();
 
         arch::RequestContextSwitch();
     }
@@ -77,12 +76,20 @@ namespace kernel
         readyList.push(tcb);
         tcb.SetList(readyList);
 
-        arch::RequestContextSwitch();
+        RequestContextSwitchIfNeeded();
     }
 
     ThreadControlBlock& Scheduler::GetCurrentThreadControlBlock() const
     {
         return *currentThreadControlBlock;
+    }
+
+    void Scheduler::RequestContextSwitchIfNeeded()
+    {
+        if (IsContextSwitchRequired())
+        {
+            arch::RequestContextSwitch();
+        }
     }
 
     void* Scheduler::SwitchContext(void* stackPointer)
@@ -98,6 +105,14 @@ namespace kernel
         }
 
         return GetCurrentThreadControlBlock().GetStack().StackPointer();
+    }
+
+    bool Scheduler::IsContextSwitchRequired() const
+    {
+        const auto isNotInReadyList = &GetCurrentThreadControlBlock().GetList() != &readyList;
+        const auto isNotTopOfReadyList = &GetCurrentThreadControlBlock() != &readyList.top();
+
+        return isNotInReadyList || isNotTopOfReadyList;
     }
 
     void Scheduler::AddInternal(ThreadControlBlock& tcb)
