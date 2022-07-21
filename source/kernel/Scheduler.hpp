@@ -14,9 +14,12 @@ namespace kernel
         void Add(MainThread& mt);
 
         void Block();
+        void Block(ThreadList& threadList, ThreadControlBlock& tcb);
         void Unblock(ThreadControlBlock& tcb);
 
+        void Suspend();
         void Suspend(ThreadControlBlock& tcb);
+        void Resume(ThreadControlBlock& tcb);
 
         void Yield();
 
@@ -30,6 +33,7 @@ namespace kernel
         bool IsContextSwitchRequired() const;
 
         void AddInternal(ThreadControlBlock& tcb);
+        void Transfer(ThreadControlBlock& tcb, ThreadList& threadList);
 
         ThreadList readyList;
         ThreadList blockedList;

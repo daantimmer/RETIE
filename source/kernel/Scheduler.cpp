@@ -37,13 +37,15 @@ namespace kernel
 
     void Scheduler::Block()
     {
+        Block(blockedList, GetCurrentThreadControlBlock());
+    }
+
+    void Scheduler::Block(ThreadList& threadList, ThreadControlBlock& tcb)
+    {
         {
             const InterruptMaskingLock interruptMaskingLock;
 
-            auto& tcb = GetCurrentThreadControlBlock();
-            tcb.GetList().erase(tcb);
-            blockedList.push(tcb);
-            tcb.SetList(blockedList);
+            Transfer(tcb, threadList);
         }
 
         arch::RequestContextSwitch();
@@ -53,28 +55,33 @@ namespace kernel
     {
         const InterruptMaskingLock interruptMaskingLock;
 
+        Transfer(tcb, readyList);
 
         RequestContextSwitchIfNeeded();
+    }
 
-        arch::RequestContextSwitch();
+    void Scheduler::Suspend()
+    {
+        Suspend(GetCurrentThreadControlBlock());
     }
 
     void Scheduler::Suspend(ThreadControlBlock& tcb)
     {
-        tcb.GetList().erase(tcb);
-        suspendedList.push(tcb);
-        tcb.SetList(suspendedList);
+        Block(suspendedList, tcb);
+    }
 
-        arch::RequestContextSwitch();
+    void Scheduler::Resume(ThreadControlBlock& tcb)
+    {
+        const InterruptMaskingLock interruptMaskingLock;
+
+        Unblock(tcb);
     }
 
     void Scheduler::Yield()
     {
         auto& tcb = GetCurrentThreadControlBlock();
 
-        tcb.GetList().erase(tcb);
-        readyList.push(tcb);
-        tcb.SetList(readyList);
+        Transfer(tcb, readyList);
 
         RequestContextSwitchIfNeeded();
     }
@@ -120,5 +127,12 @@ namespace kernel
         readyList.push(tcb);
         tcb.SetList(readyList);
         tcb.State(ThreadState::Ready);
+    }
+
+    void Scheduler::Transfer(ThreadControlBlock& tcb, ThreadList& threadList)
+    {
+        tcb.GetList().erase(tcb);
+        threadList.push(tcb);
+        tcb.SetList(threadList);
     }
 }
