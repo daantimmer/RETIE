@@ -17,9 +17,7 @@ extern "C"
 
     void __attribute__((naked)) DefaultExceptionHandlerForward()
     {
-        asm volatile("bx %0"
-                     :
-                     : "r"(Default_Handler));
+        asm volatile("bx %0" : : "r"(Default_Handler));
     }
 
     void __attribute__((weak, alias("DefaultExceptionHandlerForward"), nothrow)) NMI_Handler(void);
