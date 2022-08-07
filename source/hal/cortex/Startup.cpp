@@ -64,7 +64,7 @@ namespace
 
 extern "C"
 {
-    [[noreturn]] __attribute__((naked)) void Startup()
+    [[noreturn]] __attribute__((section(".after_vectors"), naked)) void Startup()
     {
         asm volatile("ldr r0, =__processStack_end");
         asm volatile("msr psp, r0");
